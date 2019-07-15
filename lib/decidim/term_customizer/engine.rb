@@ -62,18 +62,25 @@ module Decidim
           # passed for the job.
           organization = nil
           user = nil
+          component = nil
+          space = nil
           data[:job].arguments.each do |arg|
             organization = arg if arg.is_a?(Decidim::Organization)
             user = arg if arg.is_a?(Decidim::User)
+            component = arg.try(:component) if arg.is_a?(Decidim::HasComponent)
           end
 
           # In case an organization was not passed for the job, check it through
           # the user.
           organization = user.organization if organization.nil? && user
 
+          # Get Participatory Space from component
+          space = component.try(:participatory_space) if component.present?
+
           # Create resolver for the target organization or global context in
           # case organization was not found
-          resolver = Resolver.new(organization, nil, nil)
+
+          resolver = Resolver.new(organization, space, component)
 
           # Create the loader for the backend to fetch the translations from
           TermCustomizer.loader = Loader.new(resolver)
