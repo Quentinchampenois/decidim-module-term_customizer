@@ -2,7 +2,7 @@
 
 module Decidim
   module TermCustomizer
-    VERSION = "0.16.5"
-    DECIDIM_VERSION = "~> 0.16.0"
+    VERSION = "0.18.0"
+    DECIDIM_VERSION = "~> 0.18.0"
   end
 end
