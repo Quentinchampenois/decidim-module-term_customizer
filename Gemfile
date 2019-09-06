@@ -10,7 +10,7 @@ base_path = ""
 base_path = "../" if File.basename(__dir__) == "development_app"
 require_relative "#{base_path}lib/decidim/term_customizer/version"
 
-gem "decidim", Decidim::TermCustomizer::DECIDIM_VERSION
+gem "decidim", git: "https://github.com/decidim/decidim.git"
 gem "decidim-term_customizer", path: "."
 
 gem "bootsnap", "~> 1.3"
@@ -20,9 +20,8 @@ gem "uglifier", "~> 4.1"
 group :development, :test do
   gem "byebug", "~> 10.0", platform: :mri
 
-  gem "decidim-consultations", Decidim::TermCustomizer::DECIDIM_VERSION
-  gem "decidim-dev", Decidim::TermCustomizer::DECIDIM_VERSION
-end
+  gem "decidim-consultations", git: "https://github.com/decidim/decidim.git"
+  gem "decidim-dev", git: "https://github.com/decidim/decidim.git"
 
 group :development do
   gem "faker", "~> 1.9"
