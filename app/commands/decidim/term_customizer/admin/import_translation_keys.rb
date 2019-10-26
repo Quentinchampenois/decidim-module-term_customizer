@@ -6,6 +6,8 @@ module Decidim
       # A command with all the business logic when creating new translations
       # from the keys submitted through the form.
       class ImportTranslationKeys < Rectify::Command
+        include TermCustomizer::PluralFormsForm
+
         # Public: Initializes the command.
         #
         # form - A form object with the params.
@@ -24,6 +26,7 @@ module Decidim
 
           transaction do
             @translations = create_translations
+            create_plural_forms(@translations)
           end
 
           if @translations.length.positive?
@@ -42,10 +45,9 @@ module Decidim
             form.current_organization.available_locales.map do |locale|
               attrs = {
                 key: key,
-                locale: locale,
-                translation_set_id: form.translation_set.id
+                locale: locale
               }
-              next unless TermCustomizer::Translation.find_by(attrs).nil?
+              next unless form.translation_set.translations.find_by(attrs).nil?
 
               attrs.merge(value: I18n.t(key, locale: locale, default: ""))
             end

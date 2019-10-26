@@ -20,6 +20,7 @@ module Decidim
 
           allowed_translation_set_action?
           allowed_translation_action?
+          allowed_translation_bulk_action?
 
           permission_action
         end
@@ -40,7 +41,7 @@ module Decidim
           case permission_action.action
           when :create, :read
             allow!
-          when :update, :destroy
+          when :update, :destroy, :import, :export
             toggle_allow(translation_set.present?)
           end
         end
@@ -53,6 +54,15 @@ module Decidim
             allow!
           when :update, :destroy
             toggle_allow(translation.present?)
+          end
+        end
+
+        def allowed_translation_bulk_action?
+          return unless permission_action.subject == :translations
+
+          case permission_action.action
+          when :destroy
+            toggle_allow(translation_set.present?)
           end
         end
 

@@ -27,6 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "decidim-admin"
   spec.add_dependency "decidim-core"
 
+  spec.add_development_dependency "dalli", "~> 2.7", ">= 2.7.10" # For testing MemCacheStore
   spec.add_development_dependency "decidim-consultations"
   spec.add_development_dependency "decidim-dev"
   spec.add_development_dependency "decidim-participatory_processes"

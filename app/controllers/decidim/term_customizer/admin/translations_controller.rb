@@ -59,7 +59,7 @@ module Decidim
             end
 
             on(:invalid) do
-              flash.now[:alert] = I18n.t("translations.update.invalid", scope: "decidim.term_customizer.admin")
+              flash.now[:alert] = I18n.t("translations.update.error", scope: "decidim.term_customizer.admin")
               render action: "edit"
             end
           end
@@ -69,14 +69,54 @@ module Decidim
           enforce_permission_to :destroy, :translation, translation: translation
 
           # Destroy all locales of the translation key
-          Decidim::TermCustomizer::Translation.where(
+          pfm = TermCustomizer::PluralFormsManager.new(current_organization)
+          translations = Decidim::TermCustomizer::Translation.where(
             translation_set: set,
             key: translation.key
-          ).destroy_all
+          )
+          pfm.destroy!(translations)
+          translations.destroy_all
 
           flash[:notice] = I18n.t("translations.destroy.success", scope: "decidim.term_customizer.admin")
 
           redirect_to translation_set_translations_path(set)
+        end
+
+        def export
+          enforce_permission_to :export, :translation_set, translation_set: set
+          name = "set-translations"
+
+          ExportJob.perform_later(current_user, set, name, params[:format] || "json")
+
+          flash[:notice] = I18n.t("exports.notice", scope: "decidim.admin")
+
+          redirect_to translation_set_translations_path(set)
+        end
+
+        def new_import
+          enforce_permission_to :import, :translation_set, translation_set: set
+
+          @import = form(Admin::TranslationsImportForm).instance
+        end
+
+        def import
+          enforce_permission_to :import, :translation_set, translation_set: set
+
+          @import = form(Admin::TranslationsImportForm).from_params(
+            params,
+            current_organization: current_organization
+          )
+          ImportSetTranslations.call(@import, set) do
+            on(:ok) do
+              flash[:notice] = I18n.t("translations.import.success", scope: "decidim.term_customizer.admin")
+              redirect_to translation_set_translations_path(set)
+            end
+
+            on(:invalid) do
+              flash.now[:alert] = I18n.t("translations.import.error", scope: "decidim.term_customizer.admin")
+              render action: "new_import"
+            end
+          end
         end
 
         private

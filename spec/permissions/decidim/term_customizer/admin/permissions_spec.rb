@@ -60,6 +60,18 @@ describe Decidim::TermCustomizer::Admin::Permissions do
     end
   end
 
+  describe "translation set exporting" do
+    let(:action) do
+      { scope: :admin, action: :export, subject: :translation_set }
+    end
+
+    let(:translation_set) { create :translation_set, organization: organization }
+
+    context "when everything is OK" do
+      it { is_expected.to eq true }
+    end
+  end
+
   describe "translation creation" do
     let(:action) do
       { scope: :admin, action: :create, subject: :translation }
@@ -99,6 +111,30 @@ describe Decidim::TermCustomizer::Admin::Permissions do
 
     let(:set) { create :translation_set, organization: organization }
     let(:translation) { create :translation, translation_set: set }
+
+    context "when everything is OK" do
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe "translations importing" do
+    let(:action) do
+      { scope: :admin, action: :import, subject: :translation_set }
+    end
+
+    let(:translation_set) { create :translation_set, organization: organization }
+
+    context "when everything is OK" do
+      it { is_expected.to eq true }
+    end
+  end
+
+  describe "translations bulk destroying" do
+    let(:action) do
+      { scope: :admin, action: :destroy, subject: :translations }
+    end
+
+    let(:translation_set) { create :translation_set, organization: organization }
 
     context "when everything is OK" do
       it { is_expected.to eq true }

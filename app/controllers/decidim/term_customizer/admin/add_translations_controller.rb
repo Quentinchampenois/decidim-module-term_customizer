@@ -16,6 +16,7 @@ module Decidim
           enforce_permission_to :create, :translation
           @form = form(TranslationKeyImportForm).from_params(
             params,
+            current_organization: current_organization,
             translation_set: set
           )
 
@@ -40,7 +41,7 @@ module Decidim
           translations = directory.translations_search(params[:term])
           translations.reject! { |k| reject_keys.include?(k) }
 
-          render json: translations.map { |k, v| [k, v] }
+          render json: translations.map { |k, v| [k, ERB::Util.html_escape(v)] }
         end
 
         private

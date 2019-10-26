@@ -85,11 +85,47 @@ module Decidim
         end
       end
 
+      describe "POST export" do
+        let(:translation_set) { create(:translation_set, organization: organization) }
+
+        it "exports the translations" do
+          post :export, params: params.merge(format: "JSON")
+
+          expect(flash[:notice]).not_to be_empty
+          expect(response).to have_http_status(:found)
+        end
+      end
+
       describe "DELETE destroy" do
         let(:translation) { create(:translation, translation_set: translation_set) }
 
         it "destroys the translation" do
           delete :destroy, params: params.merge(id: translation.id)
+
+          expect(flash[:notice]).not_to be_empty
+          expect(response).to have_http_status(:found)
+        end
+      end
+
+      describe "GET import" do
+        it "renders the import form" do
+          get :new_import, params: params
+
+          expect(response).to have_http_status(:ok)
+          expect(subject).to render_template(:new_import)
+        end
+      end
+
+      describe "POST import" do
+        let(:file) do
+          fixture_file_upload(
+            file_fixture("set-translations.json"),
+            "application/json"
+          )
+        end
+
+        it "runs the import" do
+          post :import, params: params.merge(file: file)
 
           expect(flash[:notice]).not_to be_empty
           expect(response).to have_http_status(:found)
