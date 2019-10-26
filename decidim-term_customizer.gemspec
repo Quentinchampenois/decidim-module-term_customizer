@@ -24,11 +24,11 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "decidim-admin", Decidim::TermCustomizer::DECIDIM_VERSION
-  spec.add_dependency "decidim-core", Decidim::TermCustomizer::DECIDIM_VERSION
+  spec.add_dependency "decidim-admin"
+  spec.add_dependency "decidim-core"
 
-  spec.add_development_dependency "decidim-consultations", Decidim::TermCustomizer::DECIDIM_VERSION
-  spec.add_development_dependency "decidim-dev", Decidim::TermCustomizer::DECIDIM_VERSION
-  spec.add_development_dependency "decidim-participatory_processes", Decidim::TermCustomizer::DECIDIM_VERSION
-  spec.add_development_dependency "decidim-proposals", Decidim::TermCustomizer::DECIDIM_VERSION
+  spec.add_development_dependency "decidim-consultations"
+  spec.add_development_dependency "decidim-dev"
+  spec.add_development_dependency "decidim-participatory_processes"
+  spec.add_development_dependency "decidim-proposals"
 end
