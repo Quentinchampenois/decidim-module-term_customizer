@@ -48,9 +48,6 @@ module Decidim
         ActiveSupport::Notifications.subscribe "perform_start.active_job" do |_name, _started, _finished, _unique_id, data|
           context = TermCustomizer.job_context_class.new(data)
 
-          # Get Participatory Space from component
-          space = component.try(:participatory_space) if component.present?
-
           # Create resolver for the target organization or global context in
           # case organization was not found
           resolver = Resolver.new(
