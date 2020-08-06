@@ -57,7 +57,7 @@ module Decidim
       # the resolver.
       def clear_cache
         Rails.cache.delete_matched("#{cache_key_base}/*")
-      rescue NotImplementedError
+      rescue NotImplementedError, NoMethodeError
         # Some cache store, such as `ActiveSupport::Cache::MemCacheStore` do not
         # support `delete_matched`. Therefore, clear all the possibly existing
         # cache keys manually for each space and component.
@@ -65,21 +65,12 @@ module Decidim
         # Clear all the "organization" translation keys.
         Rails.cache.delete(cache_key_base)
 
-        # Iterate over the participatory spaces and their components to manually
-        # clear the cached records for all of them.
-        Decidim.participatory_space_registry.manifests.each do |manifest|
-          manifest.model_class_name.constantize.all.each do |space|
-            Rails.cache.delete("#{cache_key_base}/space_#{space.id}")
+        participatory_space_clear(cache_key_base)
+      rescue ArgumentError
+        system("RAILS_ENV='#{Rails.env}' bundle exec rails tmp:cache:clear")
 
-            next unless space.respond_to?(:components)
-
-            space.components.each do |component|
-              Rails.cache.delete(
-                "#{cache_key_base}/space_#{space.id}/component_#{component.id}"
-              )
-            end
-          end
-        end
+        Rails.cache.delete(cache_key_base)
+        participatory_space_clear(cache_key_base)
       end
 
       private
@@ -103,6 +94,24 @@ module Decidim
           end
 
         "decidim_term_customizer/#{main_key}"
+      end
+
+      # Iterate over the participatory spaces and their components to manually
+      # clear the cached records for all of them.
+      def participatory_space_clear(cache_key_base)
+        Decidim.participatory_space_registry.manifests.each do |manifest|
+          manifest.model_class_name.constantize.all.each do |space|
+            Rails.cache.delete("#{cache_key_base}/space_#{space.id}")
+
+            next unless space.respond_to?(:components)
+
+            space.components.each do |component|
+              Rails.cache.delete(
+                "#{cache_key_base}/space_#{space.id}/component_#{component.id}"
+              )
+            end
+          end
+        end
       end
     end
   end
